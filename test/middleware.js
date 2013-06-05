@@ -73,9 +73,13 @@ describe('middleware', function() {
       root: path.join(__dirname, 'test_assets')
     });
 
-    var req = { url: 'does_not_exist' };
+    var req = {
+      url: 'does_not_exist',
+      locals: require('express/lib/utils.js').locals({})
+    };
     middleWare(req, { }, function() {
       req.minifiedURL.should.be.a('function');
+      req.locals.minifiedURL.should.be.a('function');
     });
     done();
   });

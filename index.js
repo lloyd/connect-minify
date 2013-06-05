@@ -60,7 +60,7 @@ module.exports = function(opts) {
   };
 
   return function(req, res, next) {
-    req.minifiedURL = minifiedURL;
+    req.minifiedURL = req.locals.minifiedURL = minifiedURL;
     next();
   };
 };
