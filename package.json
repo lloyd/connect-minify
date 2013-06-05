@@ -20,7 +20,9 @@
     "ejs": "0.6.1",
     "express": "3.2.2",
     "mocha": "1.9.0",
-    "should": "1.2.2"
+    "should": "1.2.2",
+    "jshint": "2.1.2",
+    "walk": "2.2.1"
   },
   "scripts": {
     "test": "mocha test"
