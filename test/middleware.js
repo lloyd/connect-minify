@@ -65,7 +65,7 @@ describe('middleware', function() {
     done();
   });
 
-  it("adds expected functions to the request", function (done) {
+  it("adds minifiedURL functions and they work", function (done) {
     var middleWare = minify({
       assets: {
         "/minified.js": "/source.js",
@@ -84,6 +84,7 @@ describe('middleware', function() {
       url: 'does_not_exist',
       locals: require('express/lib/utils.js').locals({})
     };
+
     middleWare(req, { }, function() {
       req.minifiedURL.should.be.a('function');
       req.locals.minifiedURL.should.be.a('function');
@@ -92,6 +93,36 @@ describe('middleware', function() {
       req.minifiedURL('/multiple.js').should.equal('/fbe9d756eb/multiple.js');
       req.locals.minifiedURL('/multiple.js').should.equal('/fbe9d756eb/multiple.js');
       done();
+    });
+  });
+
+  it("minifies content on the fly", function (done) {
+    var middleWare = minify({
+      assets: {
+        "/minified.js": "/source.js",
+        "/multiple.js": [
+          "/source.js",
+          "/source1.js",
+          "/source2.js",
+          "/source3.js",
+          "/source4.js"
+        ],
+      },
+      root: path.join(__dirname, 'test_assets')
+    });
+
+    var req = {
+      url: '/minified.js',
+      locals: require('express/lib/utils.js').locals({}),
+    };
+
+    var headers = [];
+    middleWare(req, {
+      setHeader: function(k, v) { headers[k] = v; },
+      send: function(code, content) {
+        content.should.equal('console.log("this is my source file")');
+        done();
+      }
     });
   });
 

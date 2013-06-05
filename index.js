@@ -16,7 +16,13 @@ var fs = require('fs'),
 path = require('path'),
 util = require('util'),
 _ = require('underscore'),
-crypto = require('crypto');
+crypto = require('crypto'),
+computecluster = require('compute-cluster');
+
+var compressor = new computecluster({
+  module: path.join(__dirname, 'compressor.js'),
+  max_backlog: -1
+});
 
 // synchronous check for the existence of assets
 function syncAssetCheck(opts) {
@@ -117,8 +123,28 @@ module.exports = function(opts) {
 
   return function(req, res, next) {
     var handleRequest = function() {
-      req.minifiedURL = req.locals.minifiedURL = minifiedURL;
-      next();
+      if (cache[req.url]) {
+        res.setHeader('Cache-Control', 'public, max-age=31536000');
+        // must we minify?
+        if (!cache[req.url].minfied) {
+          // XXX: don't compress multiple times when simultaneous requests
+          // come in
+          compressor.enqueue({
+            name: req.url,
+            content: cache[req.url].source
+          }, function (err, r) {
+            if (err) return res.send(500, "failed to generate resource");
+            delete cache[req.url].source;
+            cache[req.url].minified = r.content;
+            res.send(200, cache[req.url].minified);
+          });
+        } else {
+          res.send(200, cache[req.url].minified);
+        }
+      } else {
+        req.minifiedURL = req.locals.minifiedURL = minifiedURL;
+        next();
+      }
     };
 
     // lazy cache population

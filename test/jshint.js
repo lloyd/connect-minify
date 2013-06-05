@@ -34,6 +34,7 @@ describe('source code syntax', function() {
 
   var filesToLint = [
     path.join(__dirname, '../index.js'),
+    path.join(__dirname, '../compressor.js')
   ];
 
   it('we should be able to discover files to lint', function(done) {
