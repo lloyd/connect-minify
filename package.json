@@ -1,0 +1,28 @@
+{
+  "author": "Lloyd Hilaiel <lloyd@hilaiel.com> (http://lloyd.io)",
+  "name": "connect-minify",
+  "description": "middleware to demand combine and minify resources",
+  "version": "0.0.1",
+  "homepage": "http://github.com/mozilla/connect-minify",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mozilla/connect-minify.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mozilla/connect-minify/issues"
+  },
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "ejs": "0.6.1",
+    "express": "3.2.2",
+    "mocha": "1.9.0",
+    "should": "1.2.2"
+  },
+  "scripts": {
+    "test": "mocha test"
+  }
+}
