@@ -17,21 +17,51 @@ var minify  = require('..'),
     should   = require('should');
 
 describe('middleware', function() {
-  it("should throw when assets argument is missing", function (done) {
+  it("throws when assets argument is missing", function (done) {
     (minify).should.throw("options argument to minify expected to be an object");
-    (function() { minify({}); }).should.throw("assets missing from options to minify");
+    (function() { minify({}); }).should.throw("assets argument to minify missing");
     done();
   });
 
-  it("should throw when source assets do not exist", function (done) {
+  it("throws when source assets do not exist", function (done) {
     (function() {
       minify({
         assets: {
           "minified.js": "source.js"
         }
       });
-    }).should.throw("'source.js' missing");
+    }).should.throw("'source.js' file does not exist");
     done();
   });
+
+  it("throws when assets argument is poorly formed", function (done) {
+    (function() {
+      minify({ assets: { "minified.js": [ { "source.js": "bogus" } ] } });
+    }).should.throw("'minified.js' has malformed asset list");
+
+    (function() {
+      minify({ assets: null });
+    }).should.throw("assets argument to minify must be an object");
+    done();
+  });
+
+  it("throws when root argument is poorly formed", function (done) {
+    (function() {
+      minify({
+        assets: { "minified.js": "source.js" },
+        root: [ "not", "a", "valid", "root" ]
+      });
+    }).should.throw("root path malformed (expected a string)");
+
+    (function() {
+      minify({
+        assets: { "minified.js": "source.js" },
+        root: "does_not_exist"
+      });
+    }).should.throw("root path does not exist: does_not_exist");
+
+    done();
+  });
+
 
 });

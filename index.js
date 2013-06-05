@@ -18,16 +18,26 @@ util = require('util');
 
 // synchronous check for the existence of assets
 function syncAssetCheck(opts) {
+  // check root path
+  if (typeof opts.root !== 'string') {
+    throw new Error(util.format("root path malformed (expected a string)"));
+  } else if (!fs.existsSync(opts.root)) {
+    throw new Error(util.format("root path does not exist: %s", opts.root));
+  }
+
   Object.keys(opts.assets).forEach(function(k) {
-    // allow assets composed of a single file to be specified 
+    // allow assets composed of a single file to be specified
     // as strings
     if (typeof opts.assets[k] === 'string') {
       opts.assets[k] = [ opts.assets[k] ];
     }
     // verify the existence of each file
     opts.assets[k].forEach(function(v) {
+      if (typeof v !== 'string') {
+        throw new Error(util.format("'%s' has malformed asset list", k));
+      }
       if (!fs.existsSync(path.join(opts.root, v))) {
-        throw new Error(util.format("'%s' missing", v));
+        throw new Error(util.format("'%s' file does not exist", v));
       }
     });
   });
@@ -36,8 +46,10 @@ function syncAssetCheck(opts) {
 module.exports = function(opts) {
   if (typeof opts !== 'object') {
     throw new Error("options argument to minify expected to be an object");
-  } else if (typeof opts.assets !== 'object') {
-    throw new Error("assets missing from options to minify");
+  } else if (!opts.hasOwnProperty('assets')) {
+    throw new Error("assets argument to minify missing");
+  } else if (typeof opts.assets !== 'object' || opts.assets === null) {
+    throw new Error("assets argument to minify must be an object");
   }
   if (!opts.root) opts.root = process.cwd();
 
