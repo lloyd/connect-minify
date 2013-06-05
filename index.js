@@ -55,7 +55,12 @@ module.exports = function(opts) {
 
   syncAssetCheck(opts);
 
+  var minifiedURL = function(url) {
+    return url;
+  };
+
   return function(req, res, next) {
+    req.minifiedURL = minifiedURL;
     next();
   };
 };

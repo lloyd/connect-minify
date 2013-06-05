@@ -13,8 +13,10 @@
  * limitations under the License. */
 
 
-var minify  = require('..'),
-    should   = require('should');
+var
+minify = require('..'),
+should = require('should'),
+path = require('path');
 
 describe('middleware', function() {
   it("throws when assets argument is missing", function (done) {
@@ -60,6 +62,21 @@ describe('middleware', function() {
       });
     }).should.throw("root path does not exist: does_not_exist");
 
+    done();
+  });
+
+  it("adds expected functions to the request", function (done) {
+    var middleWare = minify({
+      assets: {
+        "minified.js": "source.js"
+      },
+      root: path.join(__dirname, 'test_assets')
+    });
+
+    var req = { url: 'does_not_exist' };
+    middleWare(req, { }, function() {
+      req.minifiedURL.should.be.a('function');
+    });
     done();
   });
 
