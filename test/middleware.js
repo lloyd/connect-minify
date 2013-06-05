@@ -68,7 +68,14 @@ describe('middleware', function() {
   it("adds expected functions to the request", function (done) {
     var middleWare = minify({
       assets: {
-        "minified.js": "source.js"
+        "/minified.js": "/source.js",
+        "/multiple.js": [
+          "/source.js",
+          "/source1.js",
+          "/source2.js",
+          "/source3.js",
+          "/source4.js"
+        ],
       },
       root: path.join(__dirname, 'test_assets')
     });
@@ -80,9 +87,33 @@ describe('middleware', function() {
     middleWare(req, { }, function() {
       req.minifiedURL.should.be.a('function');
       req.locals.minifiedURL.should.be.a('function');
+      req.minifiedURL('/minified.js').should.equal('/156c445f5d/minified.js');
+      req.locals.minifiedURL('/minified.js').should.equal('/156c445f5d/minified.js');
+      req.minifiedURL('/multiple.js').should.equal('/fbe9d756eb/multiple.js');
+      req.locals.minifiedURL('/multiple.js').should.equal('/fbe9d756eb/multiple.js');
+      done();
     });
-    done();
   });
 
+/*
+  it("generates minified urls", function (done) {
+    var middleWare = minify({
+      assets: {
+        "/minified.js": "/source.js"
+      },
+      root: path.join(__dirname, 'test_assets')
+    });
+
+    var req = {
+      url: '/minified.js',
+      locals: require('express/lib/utils.js').locals({}),
+      send: function(status, body) {
+
+        done();
+      }
+    };
+    middleWare(req, { });
+  });
+*/
 
 });
