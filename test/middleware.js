@@ -12,13 +12,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. */
 
-var minify  = require('../'),
+
+var minify  = require('..'),
     should   = require('should');
 
 describe('middleware', function() {
   it("should throw when assets argument is missing", function (done) {
-    (minify).should.throw("options expected to be an object");
-    (function() { minify({}); }).should.throw("assets missing");
+    (minify).should.throw("options argument to minify expected to be an object");
+    (function() { minify({}); }).should.throw("assets missing from options to minify");
     done();
   });
+
+  it("should throw when source assets do not exist", function (done) {
+    (function() {
+      minify({
+        assets: {
+          "minified.js": "source.js"
+        }
+      });
+    }).should.throw("'source.js' missing");
+    done();
+  });
+
 });
