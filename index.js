@@ -17,7 +17,8 @@ path = require('path'),
 util = require('util'),
 _ = require('underscore'),
 crypto = require('crypto'),
-computecluster = require('compute-cluster');
+computecluster = require('compute-cluster'),
+mime = require('mime');
 
 var compressor = new computecluster({
   module: path.join(__dirname, 'compressor.js'),
@@ -77,7 +78,6 @@ function cacheUpdate(opts, done) {
       var f = path.join(opts.root, arr.shift());
       fs.readFile(f, function(err, contents) {
         if (err) {
-          console.error("can't read:", f, err);
           process.exit(1);
         }
         if (source.length) source += "\n";
@@ -121,25 +121,41 @@ module.exports = function(opts) {
     });
   }
 
+  // now build up the regular expression we'll use to determine if incoming requests are cachify urls
+  function prefixToRegex(prefix) {
+    if (prefix.indexOf('://') !== -1) {
+      var m = prefix.match(/^[a-z]{3,5}:\/\/[a-z0-9\-_.]*(?:\:[0-9]*)?\/(.*)$/i);
+      if (m) prefix = m[1];
+    }
+    var reStr = util.format('^%s([a-f0-9]{10})(.*)', prefix.replace('/', '\/'));
+    return new RegExp(reStr);
+  }
+
+  var isMinifyUrl = prefixToRegex(opts.prefix);
+
   return function(req, res, next) {
     var handleRequest = function() {
-      if (cache[req.url]) {
+      var m = isMinifyUrl.exec(req.url);
+      // if the hashes don't match, perhaps we should emit a warning
+      if (m && m[1] && cache[m[2]] && cache[m[2]].hash === m[1]) {
+        var key = m[2];
         res.setHeader('Cache-Control', 'public, max-age=31536000');
-        // must we minify?
-        if (!cache[req.url].minfied) {
+        res.setHeader('Content-Type', mime.lookup(key));
+
+        if (!cache[key].minified) {
           // XXX: don't compress multiple times when simultaneous requests
           // come in
           compressor.enqueue({
-            name: req.url,
-            content: cache[req.url].source
+            name: key,
+            content: cache[key].source
           }, function (err, r) {
             if (err) return res.send(500, "failed to generate resource");
-            delete cache[req.url].source;
-            cache[req.url].minified = r.content;
-            res.send(200, cache[req.url].minified);
+            delete cache[key].source;
+            cache[key].minified = r.content;
+            res.send(200, cache[key].minified);
           });
         } else {
-          res.send(200, cache[req.url].minified);
+          res.send(200, cache[key].minified);
         }
       } else {
         res.minifiedURL = res.locals.minifiedURL = minifiedURL;

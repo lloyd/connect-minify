@@ -116,7 +116,7 @@ describe('middleware', function() {
     });
 
     var req = {
-      url: '/minified.js',
+      url: '/156c445f5d/minified.js',
       locals: require('express/lib/utils.js').locals({}),
     };
 
@@ -127,7 +127,7 @@ describe('middleware', function() {
         content.should.equal('console.log("this is my source file")');
         done();
       },
-      locals: require('express/lib/utils.js').locals({}),
+      locals: require('express/lib/utils.js').locals({})
     });
   });
 
