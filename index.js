@@ -142,7 +142,7 @@ module.exports = function(opts) {
           res.send(200, cache[req.url].minified);
         }
       } else {
-        req.minifiedURL = req.locals.minifiedURL = minifiedURL;
+        res.minifiedURL = res.locals.minifiedURL = minifiedURL;
         next();
       }
     };

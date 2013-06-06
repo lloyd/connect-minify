@@ -85,13 +85,17 @@ describe('middleware', function() {
       locals: require('express/lib/utils.js').locals({})
     };
 
-    middleWare(req, { }, function() {
-      req.minifiedURL.should.be.a('function');
-      req.locals.minifiedURL.should.be.a('function');
-      req.minifiedURL('/minified.js').should.equal('/156c445f5d/minified.js');
-      req.locals.minifiedURL('/minified.js').should.equal('/156c445f5d/minified.js');
-      req.minifiedURL('/multiple.js').should.equal('/fbe9d756eb/multiple.js');
-      req.locals.minifiedURL('/multiple.js').should.equal('/fbe9d756eb/multiple.js');
+    var res = {
+      locals: require('express/lib/utils.js').locals({})
+    };
+
+    middleWare(req, res, function() {
+      res.minifiedURL.should.be.a('function');
+      res.locals.minifiedURL.should.be.a('function');
+      res.minifiedURL('/minified.js').should.equal('/156c445f5d/minified.js');
+      res.locals.minifiedURL('/minified.js').should.equal('/156c445f5d/minified.js');
+      res.minifiedURL('/multiple.js').should.equal('/fbe9d756eb/multiple.js');
+      res.locals.minifiedURL('/multiple.js').should.equal('/fbe9d756eb/multiple.js');
       done();
     });
   });
@@ -122,7 +126,8 @@ describe('middleware', function() {
       send: function(code, content) {
         content.should.equal('console.log("this is my source file")');
         done();
-      }
+      },
+      locals: require('express/lib/utils.js').locals({}),
     });
   });
 
