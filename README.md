@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/lloyd/connect-minify.png)](https://travis-ci.org/lloyd/connect-minify)
+
 ## Usage
 
     var minify = require('connect-minify');
