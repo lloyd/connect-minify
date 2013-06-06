@@ -130,26 +130,4 @@ describe('middleware', function() {
       locals: require('express/lib/utils.js').locals({})
     });
   });
-
-/*
-  it("generates minified urls", function (done) {
-    var middleWare = minify({
-      assets: {
-        "/minified.js": "/source.js"
-      },
-      root: path.join(__dirname, 'test_assets')
-    });
-
-    var req = {
-      url: '/minified.js',
-      locals: require('express/lib/utils.js').locals({}),
-      send: function(status, body) {
-
-        done();
-      }
-    };
-    middleWare(req, { });
-  });
-*/
-
 });
