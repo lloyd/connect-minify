@@ -108,7 +108,7 @@ module.exports = function(opts) {
   var waiting = null;
 
   var minifiedURL = function(url) {
-    if (!cache[url]) throw new Error(util.format("cannot minify url '%s'"));
+    if (!cache[url]) throw new Error(util.format("cannot minify url '%s'", url));
     return util.format('%s%s%s', opts.prefix, cache[url].hash, url);
   };
 

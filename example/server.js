@@ -9,11 +9,16 @@ app.set('view engine', 'html');
 
 app.use(minify({
   assets: {
+    "/css.css": [
+      "/css/a.css",
+      "/css/b.css"
+    ],
     "/main.js": [
       "/js/script1.js",
       "/js/script2.js",
       "/js/script3.js"
-    ]
+    ],
+    "/i/myimg.png": "/i/myimg.png"
   },
   root: "static"
 }));
